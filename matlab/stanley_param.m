@@ -5,4 +5,6 @@
 if ~exist('Controller_mode', 'var'), Controller_mode = 2;   end  % 1 : PID Control / 2 : Stanley Control
 if ~exist('k_st', 'var'),            k_st   = 2.0;          end  % 횡오차 게인 [1/s] (k >= 3 이면 dynamic 모델 발산, 조향 레이트 제한 포화)
 if ~exist('eps_st', 'var'),          eps_st = 1.0;          end  % 저속 발산 방지 [m/s]
+if ~exist('ff_st', 'var'),           ff_st  = 0;            end  % 1 : 곡률 피드포워드 (dynamic 모델 평가 시 권장) / 0 : 순수 Stanley
 Lf_st = VehicleParam.Lf;                                         % 무게중심~전륜축 [m] (1.08 m)
+Kv_st = VehicleParam.m*VehicleParam.Lr/(VehicleParam.L*2*VehicleParam.Cf);  % 슬립 보상 [s^2/m] (Cf 는 타이어 1개 값, 축은 x2)

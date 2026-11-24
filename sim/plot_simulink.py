@@ -20,7 +20,7 @@ lg = lambda k: getattr(L, k)
 fig, axs = plt.subplots(1, 4, figsize=(11, 2.9))
 titles = ["직선", "원형(R=100 m)", "우회전 폐곡선", "레이스트랙"]
 for ax, name, ttl in zip(axs, ["linear", "circular", "right_turn", "racetrack"], titles):
-    o = lg(f"{name}_m1_c2")
+    o = lg(f"{name}_m1_stanley")
     ax.plot(o.Path[0], o.Path[1], "--", color="0.6", lw=1.5, label="목표 경로")
     ax.plot(o.X, o.Y, "b", lw=1, label="Stanley 궤적")
     ax.set_title(ttl); ax.set_aspect("equal", "datalim"); ax.grid(alpha=.3); ax.set_xlabel("X [m]")
@@ -42,17 +42,17 @@ axs[0].legend(fontsize=7)
 for a in axs: a.grid(alpha=.3)
 fig.tight_layout(); fig.savefig(os.path.join(out, "fig2_step_gain.png"), dpi=200); plt.close(fig)
 
-# 그림 3: 레이스트랙 시계열 (Stanley vs PD, kinematic)
-fig, axs = plt.subplots(3, 1, figsize=(9, 4.6), sharex=True)
-for tag, st, lab in (("c2", "b", "Stanley (k=2)"), ("c1", "r--", "PD (배포 기본)")):
-    o = lg(f"racetrack_m1_{tag}")
-    axs[0].plot(o.t, o.e_y, st, lw=1, label=lab)
-    axs[1].plot(o.t, np.degrees(o.e_yaw), st, lw=1)
-    if tag == "c2":
-        axs[2].plot(o.t, o.curv, "k", lw=1)
-axs[0].set_ylabel("e_y [m]"); axs[1].set_ylabel("e_ψ [deg]"); axs[2].set_ylabel("곡률 [1/m]")
-axs[2].set_xlabel("시간 [s]"); axs[0].legend(fontsize=7, ncol=2)
-for a in axs: a.grid(alpha=.3)
+# 그림 3: 레이스트랙 (dynamic) — (a) PD vs Stanley, (b) Stanley vs Stanley+FF 확대
+fig, axs = plt.subplots(2, 1, figsize=(9, 3.6), sharex=True)
+o = {t: lg(f"racetrack_m2_{t}") for t in ("pd", "stanley", "stanley_ff")}
+axs[0].plot(o["pd"].t, o["pd"].e_y, "r--", lw=1, label="PD (배포 기본)")
+axs[0].plot(o["stanley"].t, o["stanley"].e_y, "b", lw=1, label="Stanley (k=2)")
+axs[1].plot(o["stanley"].t, o["stanley"].e_y, "b", lw=1, label="Stanley (k=2)")
+axs[1].plot(o["stanley_ff"].t, o["stanley_ff"].e_y, "g", lw=1.2, label="Stanley + 곡률 FF")
+axs[1].set_ylim(-0.5, 0.5)
+axs[0].set_ylabel("e_y [m]"); axs[1].set_ylabel("e_y [m]"); axs[1].set_xlabel("시간 [s]")
+axs[0].set_title("(a) PD와 Stanley", fontsize=9); axs[1].set_title("(b) Stanley와 Stanley + 곡률 FF (세로축 확대)", fontsize=9)
+for a in axs: a.grid(alpha=.3); a.legend(fontsize=7, ncol=2, loc="upper left")
 fig.tight_layout(); fig.savefig(os.path.join(out, "fig3_racetrack.png"), dpi=200); plt.close(fig)
 
 print("figures saved to", out)
