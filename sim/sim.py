@@ -86,13 +86,13 @@ def pd(e_y, e_yaw, vx, z=1.0, wn=1.0):  # 배포본 기본 제어기 (PID Contro
 
 
 # ---------------------------------------------------------------- 시뮬레이션
-def simulate(path, ctrl, model="kin", ey0=1.0, ephi0=0.0):
+def simulate(path, ctrl, model="kin", ey0=1.0, ephi0=0.0, rate_dps=500.0):
     ec = ErrorCalc(path)
     X, Y, yaw, vx = path[0, 0], path[1, 0] + ey0, ephi0, VX0
     beta = r = 0.0                       # dynamic model 상태
     swa_cmd_prev = swa_tf = swa_act = 0.0
     a_tf = np.exp(-TS / 0.1)
-    rate = np.deg2rad(500) * TS
+    rate = np.deg2rad(rate_dps) * TS
     log = {k: [] for k in ("t", "X", "Y", "e_y", "e_yaw", "swa_cmd", "swa_act", "ay", "curv")}
     for n in range(int(SIM_TIME / TS) + 1):
         e_y, e_yaw, curv, end = ec(X, Y, yaw)
